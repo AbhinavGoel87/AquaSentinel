@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AquaSentinel</title>
+  <link rel="stylesheet" href="/static/css/app.css?v=2">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <p class="eyebrow">Precision irrigation · local simulation</p>
+        <h1>AquaSentinel</h1>
+        <p class="tag">Every drop matters. Every crop counts.</p>
+      </div>
+      <div class="identity" id="identity" aria-live="polite"></div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="AquaSentinel">
+      <button type="button" role="tab" id="tab-field" data-tab="field" aria-controls="panel-field" aria-selected="true">Field</button>
+      <button type="button" role="tab" id="tab-doctor" data-tab="doctor" aria-controls="panel-doctor" aria-selected="false" tabindex="-1">Doctor</button>
+      <button type="button" role="tab" id="tab-sensors" data-tab="sensors" aria-controls="panel-sensors" aria-selected="false" tabindex="-1">Sensors</button>
+      <button type="button" role="tab" id="tab-alerts" data-tab="alerts" aria-controls="panel-alerts" aria-selected="false" tabindex="-1">Alerts</button>
+    </div>
+
+    <p class="banner" id="banner"><strong>Simulated data.</strong> Loading the field…</p>
+    <p class="error" id="error" hidden></p>
+
+    <main>
+      <section class="tab-panel" role="tabpanel" id="panel-field" aria-labelledby="tab-field">
+        <div class="layout">
+          <section class="panel map-panel">
+            <div class="panel-head">
+              <h2>Digital field</h2>
+              <p>Two beds. The road and the docking station are in the middle. North is at the top.</p>
+            </div>
+            <div id="field"></div>
+            <div class="legend" id="legend"></div>
+          </section>
+          <section id="zones" class="zone-stack" aria-live="polite"></section>
+        </div>
+      </section>
+
+      <section class="tab-panel" role="tabpanel" id="panel-doctor" aria-labelledby="tab-doctor" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Doctor rover</h2>
+            <p>A photo is compared with the pictures in the plant database. You confirm before anything is added to the irrigation tank.</p>
+          </div>
+          <form id="photo-form" class="controls">
+            <label>Leaf photo
+              <input id="photo-file" type="file" accept="image/png,image/jpeg" required>
+            </label>
+            <button type="submit" class="btn">Check this photo</button>
+          </form>
+          <div id="doctor"></div>
+        </section>
+      </section>
+
+      <section class="tab-panel" role="tabpanel" id="panel-sensors" aria-labelledby="tab-sensors" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Sensors</h2>
+            <p>A zone average uses sensors that agree. One odd reading stays visible and is left out of the average.</p>
+          </div>
+          <div class="table-wrap" id="sensors"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Test a sensor failure</h2>
+            <p>This drops a reading inside the simulation. Nothing physical is attached.</p>
+          </div>
+          <div id="controls"></div>
+        </section>
+      </section>
+
+      <section class="tab-panel" role="tabpanel" id="panel-alerts" aria-labelledby="tab-alerts" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Alerts</h2>
+            <p>These come from the running simulation.</p>
+          </div>
+          <div id="alerts"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>Sprinklers start closed. A treatment goes into the irrigation tank only after you confirm it, and only for a short timed cycle.</p>
+    </footer>
+  </div>
+  <script src="/static/js/field.js?v=5"></script>
+</body>
+</html>

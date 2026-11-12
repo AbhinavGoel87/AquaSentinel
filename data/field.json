@@ -1,0 +1,66 @@
+{
+  "time_scale": 60,
+  "persist_every_wall_seconds": 30,
+  "seed": 11,
+  "map": {
+    "width": 100,
+    "height": 100,
+    "north": "top"
+  },
+  "safety": {
+    "min_sensors_for_decision": 2,
+    "suspect_gap_points": 20,
+    "neighbor_agreement_points": 10,
+    "uneven_spread_points": 15
+  },
+  "zones": [
+    {
+      "id": "zone1",
+      "name": "Zone 1",
+      "crop_label": "West bed",
+      "low_threshold": 35,
+      "target_moisture": 55,
+      "max_duration_sec": 600,
+      "cooldown_sec": 300,
+      "bounds": {"x": 6, "y": 14, "w": 34, "h": 72}
+    },
+    {
+      "id": "zone2",
+      "name": "Zone 2",
+      "crop_label": "East bed",
+      "low_threshold": 35,
+      "target_moisture": 55,
+      "max_duration_sec": 600,
+      "cooldown_sec": 300,
+      "bounds": {"x": 60, "y": 14, "w": 34, "h": 72}
+    }
+  ],
+  "sensors": [
+    {"id": "zone1-s1", "zone_id": "zone1", "label": "North", "x": 22, "y": 32, "initial_moisture": 31, "dry_rate_per_hour": 2.2, "irrigate_rate_per_hour": 38, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1},
+    {"id": "zone1-s2", "zone_id": "zone1", "label": "Center", "x": 22, "y": 50, "initial_moisture": 36, "dry_rate_per_hour": 2.6, "irrigate_rate_per_hour": 36, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1},
+    {"id": "zone1-s3", "zone_id": "zone1", "label": "South", "x": 22, "y": 68, "initial_moisture": 28, "dry_rate_per_hour": 3.0, "irrigate_rate_per_hour": 40, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1},
+    {"id": "zone2-s1", "zone_id": "zone2", "label": "North", "x": 78, "y": 32, "initial_moisture": 64, "dry_rate_per_hour": 1.6, "irrigate_rate_per_hour": 32, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1},
+    {"id": "zone2-s2", "zone_id": "zone2", "label": "Center", "x": 78, "y": 50, "initial_moisture": 61, "dry_rate_per_hour": 1.9, "irrigate_rate_per_hour": 32, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1},
+    {"id": "zone2-s3", "zone_id": "zone2", "label": "South", "x": 78, "y": 68, "initial_moisture": 58, "dry_rate_per_hour": 2.1, "irrigate_rate_per_hour": 32, "noise": 0.15, "calibration_offset": 0, "calibration_scale": 1}
+  ],
+  "road": {"x": 42, "y": 14, "w": 16, "h": 72},
+  "pipes": [
+    {"x1": 18, "y1": 10, "x2": 82, "y2": 10},
+    {"x1": 18, "y1": 10, "x2": 18, "y2": 80},
+    {"x1": 82, "y1": 10, "x2": 82, "y2": 80}
+  ],
+  "routes": [
+    {
+      "id": "route-center",
+      "rover_id": "rover1",
+      "name": "Doctor rover",
+      "points": [[50, 80], [50, 22]],
+      "checkpoints": [
+        {"id": "r1-north", "name": "North checkpoint", "x": 50, "y": 32},
+        {"id": "r1-mid", "name": "Middle checkpoint", "x": 50, "y": 50},
+        {"id": "r1-south", "name": "South checkpoint", "x": 50, "y": 68}
+      ],
+      "dock": {"x": 50, "y": 80}
+    }
+  ]
+}
