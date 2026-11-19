@@ -66,7 +66,7 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
         "dose_seconds": best.dose_seconds if best.kind in ("deficiency", "disease") else None,
         "match_score": round(best_score, 3),
         "method": "database-color-match",
-        "can_treat": best.kind in ("deficiency", "disease") and bool(best.treatment_id),
+        "can_treat": False,
     }
 
 

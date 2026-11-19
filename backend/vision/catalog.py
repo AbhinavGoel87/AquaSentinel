@@ -85,10 +85,6 @@ def _entry(directory: Path, spec: dict, cache: dict, seen: set[str]) -> tuple[Pl
     if isinstance(dose, bool) or not isinstance(dose, int) or dose < 1:
         raise PlantDatabaseError(f"{entry_id} dose_seconds must be a positive integer.")
     dose = min(dose, MAX_DOSE_SECONDS)
-    if kind in ("deficiency", "disease") and treatment and "irrigation" not in action.lower():
-        raise PlantDatabaseError(
-            f"{entry_id} must tell the farmer the treatment goes into the irrigation water."
-        )
     examples = []
     changed = False
     examples_dir = directory / "examples"

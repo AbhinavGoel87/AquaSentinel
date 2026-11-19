@@ -1,10 +1,5 @@
-# Field node — ESP32
+# Field controller
 
-This board asks the Raspberry Pi what should be on, then drives the sprinkler and treatment relays.
+The field, its soil sensors, and the Arduino Uno are a separate system. Kshetra does not connect to them. There is no Bluetooth link, and this app does not open sprinklers or nutrient valves.
 
-Leave every pin at `-1` until the wiring is checked. A pin left at `-1` is never driven.
-On startup, and after three missed answers from the Pi, every wired output is turned off.
-
-The nutrient outputs follow a cycle the farmer already confirmed on the Pi. One pin exists for each CoLeaf nutrient: boron, calcium, iron, magnesium, manganese, nitrogen, phosphorus, and potassium.
-This sketch does not choose a dose and it does not name a product.
-Wire the relays so a power loss leaves the sprinklers and the treatment valves closed.
+`field_node.ino` is an older ESP32 sketch from when this computer tried to drive those outputs. Do not flash it for the current Kshetra doctor. The doctor only receives photos from `firmware/rover_doctor`.

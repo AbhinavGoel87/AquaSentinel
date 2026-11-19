@@ -73,7 +73,7 @@ class DoctorService:
             "dose_seconds": row["dose_seconds"],
             "match_score": row["match_score"],
             "method": row["method"],
-            "can_treat": row["kind"] in ("deficiency", "disease") and bool(row["treatment_id"]),
+            "can_treat": False,
             "rover_id": row["rover_id"],
             "checkpoint_id": row["checkpoint_id"],
             "image_url": f"/api/inspections/{row['inspection_id']}/image",

@@ -34,6 +34,13 @@ class Database:
                 self._conn.close()
                 self._conn = None
 
+    def ensure_schema(self) -> None:
+        schema = SCHEMA_PATH.read_text(encoding="utf-8")
+        with self._lock:
+            conn = self.connect()
+            conn.executescript(schema)
+            conn.commit()
+
     def initialize(self, field: dict) -> None:
         schema = SCHEMA_PATH.read_text(encoding="utf-8")
         with self._lock:
