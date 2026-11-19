@@ -2,6 +2,23 @@ const doctorNode = document.getElementById("doctor");
 const errorNode = document.getElementById("error");
 let busy = false;
 
+function entryLabel(id) {
+  if (id === "healthy") return "Healthy";
+  if (id === "multiple") return "Mixed";
+  const word = String(id || "");
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function percentColor(sureness, entryId) {
+  let amount = Math.max(0, Math.min(100, Number(sureness) || 0)) / 100;
+  if (entryId === "healthy") amount = 1 - amount;
+  amount *= amount;
+  const green = [31, 110, 58];
+  const red = [141, 36, 36];
+  const mix = green.map((channel, index) => Math.round(channel + (red[index] - channel) * amount));
+  return `rgb(${mix.join(", ")})`;
+}
+
 function esc(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -20,11 +37,13 @@ function render(data) {
       <p class="empty" id="doctor-empty"></p>
       <div class="doctor-result" id="doctor-result" hidden>
         <img id="doctor-photo" alt="Latest plant photo">
-        <p class="status" id="doctor-title"></p>
-        <p id="doctor-message"></p>
-        <p class="note" id="doctor-action"></p>
-        <ol class="matches" id="doctor-matches"></ol>
-        <p class="hint" id="doctor-score"></p>
+        <div class="result-copy">
+          <p class="status" id="doctor-title"></p>
+          <ol class="matches" id="doctor-matches"></ol>
+          <p id="doctor-message"></p>
+          <p class="note" id="doctor-action"></p>
+          <p class="hint" id="doctor-score"></p>
+        </div>
       </div>
     `;
     doctorNode.dataset.ready = "1";
@@ -47,9 +66,8 @@ function render(data) {
   const matches = document.getElementById("doctor-matches");
   matches.innerHTML = (report.matches || []).map((item) => `
     <li>
-      <span class="match-name">${esc(item.title)}</span>
-      <span class="match-bar"><span style="width:${Math.max(0, Math.min(100, Number(item.sureness) || 0))}%"></span></span>
-      <span class="match-percent">${esc(item.sureness)}%</span>
+      <span class="match-name">${esc(entryLabel(item.entry_id))}</span>
+      <span class="match-percent" style="color:${percentColor(item.sureness, item.entry_id)}">${esc(item.sureness)}%</span>
     </li>
   `).join("");
   document.getElementById("doctor-score").textContent = report.honesty || data.note || "";
