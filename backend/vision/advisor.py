@@ -7,10 +7,13 @@ It is not a measured accuracy and it is not a soil test.
 from __future__ import annotations
 
 from backend.vision.catalog import PlantEntry
-from backend.vision.features import feature_distance
+from backend.vision.features import vec_distance
 
-ACCEPT_SCORE = 0.62
-CLEAR_MARGIN = 0.08
+ACCEPT_SCORE = 0.55
+CLEAR_MARGIN = 0.04
+NEAR_COPY = 0.02
+# Healthy CoLeaf leaves stay under this share of yellow-green tissue.
+PALE_HEALTHY_LIMIT = 0.10
 
 
 def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
@@ -19,17 +22,24 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
             "The photo is too dark, too bright, or too small to compare with the database.",
             0.0,
         )
+    photo_vec = photo_features.get("vec") or []
+    pale = photo_features.get("pale", 0.0)
     scored = []
     for entry in entries:
-        if not entry.examples:
+        distance = _entry_distance(photo_vec, pale, entry)
+        if distance is None:
             continue
-        distance = min(feature_distance(photo_features, example.features) for example in entry.examples)
         scored.append((1 / (1 + distance), entry))
     if not scored:
         return _uncertain("The plant database has no example photos yet. Add pictures under each entry.", 0.0)
     scored.sort(key=lambda item: item[0], reverse=True)
     best_score, best = scored[0]
     second_score = scored[1][0] if len(scored) > 1 else 0.0
+    if best_score - second_score < CLEAR_MARGIN:
+        return _uncertain(
+            "Two database entries are too close. Look at the plant before choosing a treatment.",
+            best_score,
+        )
     if best_score < ACCEPT_SCORE:
         return {
             "entry_id": "discrepancy",
@@ -46,11 +56,6 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
             "method": "database-color-match",
             "can_treat": False,
         }
-    if best.kind != "healthy" and best_score - second_score < CLEAR_MARGIN:
-        return _uncertain(
-            "Two database entries are too close. Look at the plant before choosing a treatment.",
-            best_score,
-        )
     return {
         "entry_id": best.id,
         "kind": best.kind,
@@ -63,6 +68,23 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
         "method": "database-color-match",
         "can_treat": best.kind in ("deficiency", "disease") and bool(best.treatment_id),
     }
+
+
+def _entry_distance(photo_vec: list[float], pale: float, entry: PlantEntry) -> float | None:
+    vectors = [example.features.get("vec") or [] for example in entry.examples]
+    vectors = [vector for vector in vectors if len(vector) == len(photo_vec) and photo_vec]
+    if not vectors:
+        return None
+    nearest = min(vec_distance(photo_vec, vector) for vector in vectors)
+    # A yellowing leaf is outside the healthy examples, so it cannot win as healthy
+    # just because one green photo is a near neighbor.
+    if entry.kind == "healthy" and pale > PALE_HEALTHY_LIMIT and nearest > NEAR_COPY:
+        return None
+    if nearest <= NEAR_COPY:
+        return nearest
+    width = len(vectors[0])
+    center = [sum(vector[index] for vector in vectors) / len(vectors) for index in range(width)]
+    return vec_distance(photo_vec, center)
 
 
 def _poor_photo(features: dict) -> bool:

@@ -416,7 +416,7 @@ function showTab(tabId) {
     button.tabIndex = selected ? 0 : -1;
     document.getElementById(button.getAttribute("aria-controls")).hidden = !selected;
   }
-  try { sessionStorage.setItem("aquasentinel-tab", tabId); } catch (error) { /* private mode can block storage */ }
+  try { sessionStorage.setItem("kshetra-tab", tabId); } catch (error) { /* private mode can block storage */ }
 }
 
 document.querySelector("[role='tablist']").addEventListener("click", (event) => {
@@ -439,7 +439,7 @@ document.querySelector("[role='tablist']").addEventListener("keydown", (event) =
 });
 
 try {
-  const saved = sessionStorage.getItem("aquasentinel-tab");
+  const saved = sessionStorage.getItem("kshetra-tab");
   if (saved && tabButtons.some((button) => button.dataset.tab === saved)) showTab(saved);
 } catch (error) { /* keep the Field tab */ }
 

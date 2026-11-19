@@ -2,7 +2,7 @@
   "id": "magnesium",
   "kind": "deficiency",
   "title": "Possible magnesium deficiency",
-  "farmer_message": "This photo is closest to your magnesium-deficiency examples. That is a visual match, not a measurement of magnesium in the soil.",
+  "farmer_message": "This photo is closest to the magnesium examples in the CoLeaf set. That is a visual match to those pictures, not a measurement of the nutrient in the leaf or the soil.",
   "recommended_action": "If you agree, add your magnesium supplement to the irrigation tank for one short timed cycle.",
   "treatment_id": "magnesium",
   "dose_seconds": 30

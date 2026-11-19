@@ -1,0 +1,9 @@
+{
+  "id": "potassium",
+  "kind": "deficiency",
+  "title": "Possible potassium deficiency",
+  "farmer_message": "This photo is closest to the potassium examples in the CoLeaf set. That is a visual match to those pictures, not a measurement of the nutrient in the leaf or the soil.",
+  "recommended_action": "If you agree, add your potassium supplement to the irrigation tank for one short timed cycle.",
+  "treatment_id": "potassium",
+  "dose_seconds": 30
+}

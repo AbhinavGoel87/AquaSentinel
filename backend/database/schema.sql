@@ -1,4 +1,4 @@
--- AquaSentinel Phase 1 schema.
+-- Kshetra Phase 1 schema.
 -- Moisture averages are calculated in Python. They are not copied into their own table.
 -- estimated_liters stays NULL until a later build stores an explicit estimate or a meter reading.
 

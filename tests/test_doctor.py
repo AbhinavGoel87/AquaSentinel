@@ -3,6 +3,7 @@
 import io
 import tempfile
 import unittest
+from dataclasses import replace
 from datetime import timedelta
 from pathlib import Path
 
@@ -11,6 +12,17 @@ from backend.vision.catalog import load_catalog
 from backend.vision.features import features_from_bytes
 from backend.vision.pngutil import write_rgb_png
 from tests.support import ROOT, make_app
+
+
+def _example(entry_id: str) -> Path:
+    folder = ROOT / "plant_database" / "entries" / entry_id / "examples"
+    photos = [
+        path for path in folder.iterdir()
+        if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png"} and path.stat().st_size < 5_000_000
+    ]
+    if not photos:
+        raise unittest.SkipTest(f"No CoLeaf photo installed for {entry_id}.")
+    return sorted(photos)[0]
 
 
 def solid(path: Path, color: tuple[int, int, int]) -> None:
@@ -22,17 +34,51 @@ class AdvisorTests(unittest.TestCase):
     def setUpClass(cls):
         cls.catalog = load_catalog(ROOT / "plant_database")
 
-    def test_green_matches_healthy_and_cannot_treat(self):
-        advice = self._advice((48, 150, 55))
-        self.assertEqual(advice["entry_id"], "healthy")
-        self.assertFalse(advice["can_treat"])
-        self.assertEqual(advice["method"], "database-color-match")
+    def test_coleaf_has_ten_groups_and_about_a_thousand_photos(self):
+        photos = sum(len(entry.examples) for entry in self.catalog)
+        self.assertGreaterEqual(photos, 900)
+        self.assertEqual(
+            {entry.id for entry in self.catalog},
+            {
+                "healthy", "boron", "calcium", "iron", "magnesium", "manganese",
+                "nitrogen", "phosphorus", "potassium", "multiple",
+            },
+        )
 
-    def test_yellow_matches_magnesium(self):
-        advice = self._advice((210, 160, 40))
+    def test_a_known_magnesium_photo_can_be_treated(self):
+        path = _example("magnesium")
+        advice = advise(features_from_bytes(path.read_bytes()), self.catalog)
         self.assertEqual(advice["entry_id"], "magnesium")
         self.assertEqual(advice["kind"], "deficiency")
         self.assertTrue(advice["can_treat"])
+        self.assertEqual(advice["method"], "database-color-match")
+
+    def test_a_yellow_magnesium_leaf_is_not_called_healthy(self):
+        magnesium = next(entry for entry in self.catalog if entry.id == "magnesium")
+        yellow = [example for example in magnesium.examples if example.features.get("pale", 0) > 0.20]
+        self.assertGreaterEqual(len(yellow), 20)
+        for example in yellow:
+            held = []
+            for entry in self.catalog:
+                if entry.id != "magnesium":
+                    held.append(entry)
+                    continue
+                kept = [item for item in entry.examples if item.path != example.path]
+                held.append(replace(entry, examples=kept))
+            advice = advise(example.features, held)
+            self.assertNotEqual(advice["kind"], "healthy", example.path.name)
+
+    def test_healthy_examples_stay_healthy(self):
+        healthy = next(entry for entry in self.catalog if entry.id == "healthy")
+        for example in healthy.examples:
+            self.assertLessEqual(example.features["pale"], 0.10)
+            advice = advise(example.features, self.catalog)
+            self.assertEqual(advice["entry_id"], "healthy", example.path.name)
+            self.assertFalse(advice["can_treat"])
+
+    def test_the_mixed_group_cannot_start_a_treatment(self):
+        multiple = next(entry for entry in self.catalog if entry.id == "multiple")
+        self.assertIsNone(multiple.treatment_id)
 
     def test_a_dark_photo_stays_uncertain(self):
         advice = self._advice((4, 4, 4))
@@ -56,6 +102,25 @@ class TreatmentApiTests(unittest.TestCase):
         self.app.extensions["db"].close()
         self.temp.cleanup()
 
+    def test_raw_jpeg_body_is_classified(self):
+        sample = _example("magnesium")
+        payload = sample.read_bytes()
+        report = self.client.post("/api/inspections", data=payload, content_type="image/jpeg")
+        self.assertEqual(report.status_code, 200)
+        body = report.get_json()
+        self.assertEqual(body["entry_id"], "magnesium")
+        self.assertEqual(body["kind"], "deficiency")
+        self.assertEqual(body["method"], "database-color-match")
+        self.assertIn("not a laboratory test", body["honesty"])
+        self.assertEqual(body["rover_id"], "rover1")
+        image = self.client.get(body["image_url"])
+        try:
+            self.assertEqual(image.status_code, 200)
+            self.assertTrue(image.data.startswith(b"\xff\xd8\xff"))
+            self.assertEqual(image.data, payload)
+        finally:
+            image.close()
+
     def test_upload_is_marked_simulated_and_uncertain_cannot_start_a_treatment(self):
         dark = self._png((4, 4, 4))
         report = self.client.post(
@@ -70,10 +135,10 @@ class TreatmentApiTests(unittest.TestCase):
         self.assertFalse(self.client.get("/api/outputs").get_json()["treatment"])
 
     def test_confirm_starts_a_timed_cycle_and_emergency_stop_ends_it(self):
-        yellow = self._png((210, 160, 40))
+        sample = _example("magnesium")
         report = self.client.post(
             "/api/inspections",
-            data={"image": (yellow, "leaf.png"), "source": "simulated", "rover_id": "rover1"},
+            data={"image": (io.BytesIO(sample.read_bytes()), sample.name), "source": "simulated", "rover_id": "rover1"},
         )
         body = report.get_json()
         self.assertEqual(body["entry_id"], "magnesium")
@@ -89,10 +154,10 @@ class TreatmentApiTests(unittest.TestCase):
         self.assertFalse(stopped.get_json()["treatment"]["active"])
 
     def test_the_cycle_ends_when_its_time_is_up(self):
-        yellow = self._png((210, 160, 40))
+        sample = _example("magnesium")
         report = self.client.post(
             "/api/inspections",
-            data={"image": (yellow, "leaf.png"), "source": "simulated"},
+            data={"image": (io.BytesIO(sample.read_bytes()), sample.name), "source": "simulated"},
         ).get_json()
         self.client.post("/api/treatments/confirm", json={"report_id": report["report_id"]})
         treatments = self.app.extensions["treatments"]

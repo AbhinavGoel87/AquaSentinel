@@ -1,5 +1,5 @@
 /*
-  AquaSentinel field node.
+  Kshetra field node.
 
   Polls the Raspberry Pi and mirrors sprinkler and treatment outputs.
   Pins stay unwired while they are -1.
@@ -16,9 +16,11 @@ const char* OUTPUTS_URL = "http://192.168.1.20:5000/api/outputs";
 // Set a pin only after that relay is wired and checked.
 const int ZONE1_PIN = -1;
 const int ZONE2_PIN = -1;
-const int MAGNESIUM_PIN = -1;
-const int SULFUR_PIN = -1;
-const int PEST_PIN = -1;
+const char* NUTRIENT_IDS[] = {
+  "boron", "calcium", "iron", "magnesium", "manganese", "nitrogen", "phosphorus", "potassium"
+};
+const int NUTRIENT_PINS[] = {-1, -1, -1, -1, -1, -1, -1, -1};
+const int NUTRIENT_COUNT = 8;
 
 int missedPolls = 0;
 
@@ -29,9 +31,7 @@ void writePin(int pin, bool on) {
 void allOff() {
   writePin(ZONE1_PIN, false);
   writePin(ZONE2_PIN, false);
-  writePin(MAGNESIUM_PIN, false);
-  writePin(SULFUR_PIN, false);
-  writePin(PEST_PIN, false);
+  for (int index = 0; index < NUTRIENT_COUNT; index++) writePin(NUTRIENT_PINS[index], false);
 }
 
 void prepare(int pin) {
@@ -65,18 +65,16 @@ void apply(const String& body) {
   }
   writePin(ZONE1_PIN, flagFor(body, "zone1"));
   writePin(ZONE2_PIN, flagFor(body, "zone2"));
-  writePin(MAGNESIUM_PIN, treatmentFor(body, "magnesium"));
-  writePin(SULFUR_PIN, treatmentFor(body, "sulfur"));
-  writePin(PEST_PIN, treatmentFor(body, "pest"));
+  for (int index = 0; index < NUTRIENT_COUNT; index++) {
+    writePin(NUTRIENT_PINS[index], treatmentFor(body, NUTRIENT_IDS[index]));
+  }
 }
 
 void setup() {
   Serial.begin(115200);
   prepare(ZONE1_PIN);
   prepare(ZONE2_PIN);
-  prepare(MAGNESIUM_PIN);
-  prepare(SULFUR_PIN);
-  prepare(PEST_PIN);
+  for (int index = 0; index < NUTRIENT_COUNT; index++) prepare(NUTRIENT_PINS[index]);
   allOff();
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.println("Field node booted. Outputs are off.");

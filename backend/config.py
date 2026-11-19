@@ -29,11 +29,11 @@ def load_config() -> Config:
     root = ROOT
     return Config(
         root=root,
-        db_path=Path(os.environ.get("AQUASENTINEL_DB", root / "data" / "aquasentinel.db")),
-        field_path=Path(os.environ.get("AQUASENTINEL_FIELD", root / "data" / "field.json")),
-        plant_database_path=Path(os.environ.get("AQUASENTINEL_PLANT_DB", root / "plant_database")),
-        inspection_path=Path(os.environ.get("AQUASENTINEL_INSPECTIONS", root / "data" / "inspections")),
-        host=os.environ.get("AQUASENTINEL_HOST", "127.0.0.1"),
-        port=int(os.environ.get("AQUASENTINEL_PORT", "5000")),
-        tick_wall_seconds=float(os.environ.get("AQUASENTINEL_TICK_SECONDS", "1.0")),
+        db_path=Path(os.environ.get("KSHETRA_DB", root / "data" / "kshetra.db")),
+        field_path=Path(os.environ.get("KSHETRA_FIELD", root / "data" / "field.json")),
+        plant_database_path=Path(os.environ.get("KSHETRA_PLANT_DB", root / "plant_database")),
+        inspection_path=Path(os.environ.get("KSHETRA_INSPECTIONS", root / "data" / "inspections")),
+        host=os.environ.get("KSHETRA_HOST", "127.0.0.1"),
+        port=int(os.environ.get("KSHETRA_PORT", "5000")),
+        tick_wall_seconds=float(os.environ.get("KSHETRA_TICK_SECONDS", "1.0")),
     )

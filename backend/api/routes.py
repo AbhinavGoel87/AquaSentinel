@@ -30,7 +30,7 @@ def _bundle():
 
 @api_bp.get("/health")
 def health():
-    return jsonify({"status": "ok", "service": "aquasentinel", "hardware": "simulated"})
+    return jsonify({"status": "ok", "service": "kshetra", "hardware": "simulated"})
 
 
 @api_bp.get("/field")

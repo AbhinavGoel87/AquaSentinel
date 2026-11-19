@@ -7,4 +7,8 @@ data/*.db-wal
 data/*.db-shm
 data/inspections/*
 !data/inspections/.gitkeep
+data/coleaf_src/
+CoLeaf DATASET.zip
+plant_database/.feature_cache.json
+plant_database/entries/*/examples/*
 .pytest_cache/

@@ -1,9 +1,0 @@
-{
-  "id": "pest",
-  "kind": "disease",
-  "title": "Possible pest damage",
-  "farmer_message": "This photo is closest to your pest-damage examples. Look at the leaves before you treat them. The picture cannot name the insect or measure how serious it is.",
-  "recommended_action": "If you agree, add the pest treatment you already use to the irrigation tank for one short timed cycle.",
-  "treatment_id": "pest",
-  "dose_seconds": 20
-}

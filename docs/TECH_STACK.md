@@ -1,4 +1,4 @@
-# AquaSentinel tech stack
+# Kshetra tech stack
 
 A guide for the builders. Written so a Grade 9 student can explain every choice to a judge, a teacher, or a parent.
 
@@ -8,7 +8,7 @@ No new code belongs with this note. The next coding step waits until we are told
 
 A tech stack is the set of languages, libraries, and tools a project uses, plus the reasons those choices fit the job. A language is what we write. A library is code someone else already wrote, which we call from our language. A protocol is a set of rules for how two machines send messages. Those three are different things, and mixing them up is how a project starts to sound more complicated than it is.
 
-AquaSentinel needs five jobs:
+Kshetra needs five jobs:
 
 1. Pretend the field is real, because the lab is closed.
 2. Decide when a zone is dry, and refuse unsafe valve commands.
@@ -20,7 +20,7 @@ One main language can do jobs 1 to 3. The web page needs the three web languages
 
 ## The short list
 
-| Kind | Name | Used now? | Job in AquaSentinel |
+| Kind | Name | Used now? | Job in Kshetra |
 | --- | --- | --- | --- |
 | Language | Python 3.12 | Yes | Brain of the project: simulation, safety, database, web server, tests |
 | Language | HTML | Yes | Structure of the field page |
@@ -153,7 +153,7 @@ There is no React and no build step. The browser runs `frontend/static/js/field.
 
 ### SQL and SQLite
 
-SQL is the language of the database. SQLite is the program that understands it. For us, SQLite stores one file, `data/aquasentinel.db`. There is no password and no database server.
+SQL is the language of the database. SQLite is the program that understands it. For us, SQLite stores one file, `data/kshetra.db`. There is no password and no database server.
 
 The tables hold zones, sensors, readings, irrigation events, and alerts. "How wet is Zone 1 right now?" is calculated in Python from the latest usable readings. We do not store that average again, because two copies drift apart.
 
@@ -223,4 +223,4 @@ Not installed, and not required for the current phase:
 
 ## One sentence you can memorise
 
-AquaSentinel's brain is Python, its memory is SQLite, its page is HTML, CSS, and JavaScript, and the circuit boards will later speak C++ over MQTT and HTTP when the hardware is actually on the bench.
+Kshetra's brain is Python, its memory is SQLite, its page is HTML, CSS, and JavaScript, and the circuit boards will later speak C++ over MQTT and HTTP when the hardware is actually on the bench.

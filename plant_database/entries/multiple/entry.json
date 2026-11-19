@@ -1,0 +1,9 @@
+{
+  "id": "multiple",
+  "kind": "deficiency",
+  "title": "Possible mix of deficiencies",
+  "farmer_message": "This photo is closest to the combined-deficiency examples in the CoLeaf set. Those pictures show more than one nutrient problem at once, so the match does not name a single nutrient.",
+  "recommended_action": "Look at the plant in person before adding anything to the irrigation water.",
+  "treatment_id": null,
+  "dose_seconds": 30
+}

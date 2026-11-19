@@ -40,12 +40,12 @@ Not connected in this phase. Commands and emergency stop are QoS 1. Measurements
 
 | Topic | Direction | Body |
 | --- | --- | --- |
-| `aquasentinel/sensors/zone1` | Sensor board to controller | Sensor batch. `zone2` and `zone3` match. |
-| `aquasentinel/irrigation/zone1` | Controller to valve board | Valve command. `zone2` and `zone3` match. |
-| `aquasentinel/rover1/status` | Rover to controller | Rover status. `rover2` matches. |
-| `aquasentinel/rover1/command` | Controller to rover | Movement command. `rover2` matches. |
-| `aquasentinel/system/heartbeat` | Device to controller | Device id and time. |
-| `aquasentinel/system/estop` | Controller to devices | Latch emergency stop. |
+| `kshetra/sensors/zone1` | Sensor board to controller | Sensor batch. `zone2` and `zone3` match. |
+| `kshetra/irrigation/zone1` | Controller to valve board | Valve command. `zone2` and `zone3` match. |
+| `kshetra/rover1/status` | Rover to controller | Rover status. `rover2` matches. |
+| `kshetra/rover1/command` | Controller to rover | Movement command. `rover2` matches. |
+| `kshetra/system/heartbeat` | Device to controller | Device id and time. |
+| `kshetra/system/estop` | Controller to devices | Latch emergency stop. |
 
 Photos will use `POST /api/inspections` over HTTP, with the rover id, checkpoint, time, and image file. That address is reserved. This phase returns "not part of this build" if you call it.
 

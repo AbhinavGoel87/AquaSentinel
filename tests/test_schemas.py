@@ -74,8 +74,8 @@ class SchemaTests(unittest.TestCase):
         self.assertTrue(validate_rover_status({**status, "state": "flying"}))
 
     def test_topics_match_the_contract(self):
-        self.assertEqual(sensor_topic("zone1"), "aquasentinel/sensors/zone1")
-        self.assertEqual(irrigation_topic("zone2"), "aquasentinel/irrigation/zone2")
+        self.assertEqual(sensor_topic("zone1"), "kshetra/sensors/zone1")
+        self.assertEqual(irrigation_topic("zone2"), "kshetra/irrigation/zone2")
         self.assertEqual(INSPECTION_UPLOAD_PATH, "/api/inspections")
         with self.assertRaises(ValueError):
             sensor_topic("zone 1")

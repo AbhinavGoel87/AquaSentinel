@@ -1,1 +1,1 @@
-"""AquaSentinel central controller package."""
+"""Kshetra central controller package."""

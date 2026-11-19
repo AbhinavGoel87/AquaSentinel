@@ -3,7 +3,7 @@
 Soil moisture moves on an accelerated clock. Valve safety uses wall-clock time.
 Restarting the process closes every valve. Moisture continues from the last
 saved raw reading so a reboot does not jump the field back to the starting story.
-Delete data/aquasentinel.db when you want the original starting values.
+Delete data/kshetra.db when you want the original starting values.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from backend.sensors.health import judge_zone
 from backend.simulation.moisture import advance_moisture, apply_calibration
 from backend.utils.timeutil import as_utc, utc_iso, utc_now
 
-LOGGER = logging.getLogger("aquasentinel.sim")
+LOGGER = logging.getLogger("kshetra.sim")
 
 
 def _rover_label(status: str, checkpoint: str | None) -> str:
@@ -137,7 +137,7 @@ class FieldSimulator:
         if self._thread and self._thread.is_alive():
             return
         self._stop.clear()
-        self._thread = threading.Thread(target=self._loop, name="aquasentinel-sim", daemon=True)
+        self._thread = threading.Thread(target=self._loop, name="kshetra-sim", daemon=True)
         self._thread.start()
 
     def stop(self) -> None:

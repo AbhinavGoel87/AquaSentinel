@@ -30,6 +30,7 @@ def ensure_environment(python: Path) -> None:
         stderr=subprocess.DEVNULL,
     )
     if probe.returncode != 0:
+        subprocess.check_call([str(python), "-m", "pip", "install", "--upgrade", "pip"])
         subprocess.check_call([str(python), "-m", "pip", "install", "-r", str(ROOT / "requirements.txt")])
 
 

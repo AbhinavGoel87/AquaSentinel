@@ -1,4 +1,4 @@
-"""Start the AquaSentinel controller and the field simulator."""
+"""Start the Kshetra controller and the field simulator."""
 
 from backend.app import create_app
 from backend.config import load_config
@@ -9,7 +9,7 @@ def main() -> None:
     simulator = app.extensions["sim"]
     simulator.start()
     url = f"http://{config.host}:{config.port}"
-    print("AquaSentinel is running at", url)
+    print("Kshetra is running at", url)
     print("This process is a simulation. No sensors, rovers, or valves are connected.")
     print("Press Ctrl+C to stop.")
     try:

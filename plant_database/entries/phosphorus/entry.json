@@ -1,0 +1,9 @@
+{
+  "id": "phosphorus",
+  "kind": "deficiency",
+  "title": "Possible phosphorus deficiency",
+  "farmer_message": "This photo is closest to the phosphorus examples in the CoLeaf set. That is a visual match to those pictures, not a measurement of the nutrient in the leaf or the soil.",
+  "recommended_action": "If you agree, add your phosphorus supplement to the irrigation tank for one short timed cycle.",
+  "treatment_id": "phosphorus",
+  "dose_seconds": 30
+}

@@ -10,7 +10,7 @@ from backend.vision.advisor import advise
 from backend.vision.catalog import PlantEntry
 from backend.vision.features import features_from_bytes
 
-MAX_BYTES = 5_000_000
+MAX_BYTES = 15_000_000
 
 
 class DoctorService:

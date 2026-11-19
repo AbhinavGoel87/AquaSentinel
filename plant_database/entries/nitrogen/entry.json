@@ -1,0 +1,9 @@
+{
+  "id": "nitrogen",
+  "kind": "deficiency",
+  "title": "Possible nitrogen deficiency",
+  "farmer_message": "This photo is closest to the nitrogen examples in the CoLeaf set. That is a visual match to those pictures, not a measurement of the nutrient in the leaf or the soil.",
+  "recommended_action": "If you agree, add your nitrogen supplement to the irrigation tank for one short timed cycle.",
+  "treatment_id": "nitrogen",
+  "dose_seconds": 30
+}

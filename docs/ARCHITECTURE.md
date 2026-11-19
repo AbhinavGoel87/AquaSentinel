@@ -1,6 +1,6 @@
 # Architecture
 
-AquaSentinel is a local controller for three irrigation zones, nine soil sensors, and two inspection rovers. The browser talks only to Flask. Flask asks sensor health and valve safety. Those layers talk to the simulator today. Later they can talk to MQTT and HTTP hardware without a new dashboard.
+Kshetra is a local controller for three irrigation zones, nine soil sensors, and two inspection rovers. The browser talks only to Flask. Flask asks sensor health and valve safety. Those layers talk to the simulator today. Later they can talk to MQTT and HTTP hardware without a new dashboard.
 
 ```text
 Field page

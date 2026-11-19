@@ -55,9 +55,9 @@ def validate_field(data: dict) -> None:
     zones = data.get("zones")
     sensors = data.get("sensors")
     if not isinstance(zones, list) or len(zones) != 2:
-        raise FieldConfigError("AquaSentinel requires exactly 2 irrigation zones.")
+        raise FieldConfigError("Kshetra requires exactly 2 irrigation zones.")
     if not isinstance(sensors, list) or len(sensors) != 6:
-        raise FieldConfigError("AquaSentinel requires exactly 6 soil sensors.")
+        raise FieldConfigError("Kshetra requires exactly 6 soil sensors.")
 
     zone_ids = []
     for zone in zones:

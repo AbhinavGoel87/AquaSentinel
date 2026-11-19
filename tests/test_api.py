@@ -35,7 +35,7 @@ class ApiTests(unittest.TestCase):
     def test_page_names_the_simulation(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"AquaSentinel", response.data)
+        self.assertIn(b"Kshetra", response.data)
         self.assertIn(b"Simulated", response.data)
         self.assertIn(b'role="tablist"', response.data)
         self.assertIn(b"Doctor", response.data)
