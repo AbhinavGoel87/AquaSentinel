@@ -193,6 +193,41 @@ input:focus-visible {
 
 .hint { margin: 10px 0 0; font-size: 0.92rem; }
 
+.matches {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.matches li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(72px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+
+.match-name { font-size: 0.98rem; }
+
+.match-bar {
+  height: 7px;
+  background: rgba(36, 24, 15, 0.08);
+}
+
+.match-bar span {
+  display: block;
+  height: 100%;
+  background: var(--marigold);
+}
+
+.match-percent {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 3.2rem;
+  text-align: right;
+}
+
 .empty { margin: 0; }
 
 @media (max-width: 720px) {

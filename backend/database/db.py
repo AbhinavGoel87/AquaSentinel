@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 import threading
 from pathlib import Path
@@ -39,6 +40,7 @@ class Database:
         with self._lock:
             conn = self.connect()
             conn.executescript(schema)
+            self._ensure_matches_column(conn)
             conn.commit()
 
     def initialize(self, field: dict) -> None:
@@ -46,6 +48,7 @@ class Database:
         with self._lock:
             conn = self.connect()
             conn.executescript(schema)
+            self._ensure_matches_column(conn)
             self._upsert_field(conn, field)
             self._startup_safe_state(conn)
             conn.commit()
@@ -206,8 +209,9 @@ class Database:
                 """
                 INSERT INTO plant_reports (
                     inspection_id, entry_id, kind, title, farmer_message,
-                    recommended_action, treatment_id, dose_seconds, match_score, method, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    recommended_action, treatment_id, dose_seconds, match_score,
+                    matches_json, method, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     inspection_id,
@@ -219,6 +223,7 @@ class Database:
                     advice["treatment_id"],
                     advice["dose_seconds"],
                     advice["match_score"],
+                    json.dumps(advice.get("matches") or []),
                     advice["method"],
                     created_at,
                 ),
@@ -242,7 +247,8 @@ class Database:
                 """
                 SELECT r.id AS report_id, r.inspection_id, r.entry_id, r.kind, r.title,
                        r.farmer_message, r.recommended_action, r.treatment_id, r.dose_seconds,
-                       r.match_score, r.method, r.created_at, i.image_path, i.rover_id, i.checkpoint_id
+                       r.match_score, r.matches_json, r.method, r.created_at,
+                       i.image_path, i.rover_id, i.checkpoint_id
                 FROM plant_reports r
                 JOIN inspections i ON i.id = r.inspection_id
                 ORDER BY r.id DESC
@@ -296,6 +302,11 @@ class Database:
                     (ended_at, stop_reason, duration, row["id"]),
                 )
             conn.commit()
+
+    def _ensure_matches_column(self, conn: sqlite3.Connection) -> None:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(plant_reports)")}
+        if columns and "matches_json" not in columns:
+            conn.execute("ALTER TABLE plant_reports ADD COLUMN matches_json TEXT")
 
     def _upsert_field(self, conn: sqlite3.Connection, field: dict) -> None:
         for zone in field["zones"]:

@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS plant_reports (
     treatment_id TEXT,
     dose_seconds INTEGER,
     match_score REAL,
+    matches_json TEXT,
     method TEXT NOT NULL,
     created_at TEXT NOT NULL
 );

@@ -9,8 +9,6 @@ from __future__ import annotations
 from backend.vision.catalog import PlantEntry
 from backend.vision.features import vec_distance
 
-ACCEPT_SCORE = 0.55
-CLEAR_MARGIN = 0.04
 NEAR_COPY = 0.02
 # Healthy CoLeaf leaves stay under this share of yellow-green tissue.
 PALE_HEALTHY_LIMIT = 0.10
@@ -34,28 +32,10 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
         return _uncertain("The plant database has no example photos yet. Add pictures under each entry.", 0.0)
     scored.sort(key=lambda item: item[0], reverse=True)
     best_score, best = scored[0]
-    second_score = scored[1][0] if len(scored) > 1 else 0.0
-    if best_score - second_score < CLEAR_MARGIN:
-        return _uncertain(
-            "Two database entries are too close. Look at the plant before choosing a treatment.",
-            best_score,
-        )
-    if best_score < ACCEPT_SCORE:
-        return {
-            "entry_id": "discrepancy",
-            "kind": "discrepancy",
-            "title": "The plant looks different",
-            "farmer_message": (
-                "This photo does not match the healthy examples, and it does not clearly match "
-                "one deficiency or disease in the database."
-            ),
-            "recommended_action": "Look at the plant in person before adding anything to the irrigation water.",
-            "treatment_id": None,
-            "dose_seconds": None,
-            "match_score": round(best_score, 3),
-            "method": "database-color-match",
-            "can_treat": False,
-        }
+    matches = [
+        {"entry_id": entry.id, "title": entry.title, "sureness": round(score * 100)}
+        for score, entry in scored
+    ]
     return {
         "entry_id": best.id,
         "kind": best.kind,
@@ -65,6 +45,7 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
         "treatment_id": best.treatment_id if best.kind in ("deficiency", "disease") else None,
         "dose_seconds": best.dose_seconds if best.kind in ("deficiency", "disease") else None,
         "match_score": round(best_score, 3),
+        "matches": matches,
         "method": "database-color-match",
         "can_treat": False,
     }
@@ -103,6 +84,7 @@ def _uncertain(message: str, score: float) -> dict:
         "treatment_id": None,
         "dose_seconds": None,
         "match_score": round(score, 3),
+        "matches": [],
         "method": "database-color-match",
         "can_treat": False,
     }

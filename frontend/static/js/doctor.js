@@ -23,6 +23,7 @@ function render(data) {
         <p class="status" id="doctor-title"></p>
         <p id="doctor-message"></p>
         <p class="note" id="doctor-action"></p>
+        <ol class="matches" id="doctor-matches"></ol>
         <p class="hint" id="doctor-score"></p>
       </div>
     `;
@@ -43,7 +44,15 @@ function render(data) {
   document.getElementById("doctor-title").textContent = report.title;
   document.getElementById("doctor-message").textContent = report.farmer_message;
   document.getElementById("doctor-action").textContent = report.recommended_action;
-  document.getElementById("doctor-score").textContent = `Closest match ${report.match_score}. ${report.honesty || data.note || ""}`;
+  const matches = document.getElementById("doctor-matches");
+  matches.innerHTML = (report.matches || []).map((item) => `
+    <li>
+      <span class="match-name">${esc(item.title)}</span>
+      <span class="match-bar"><span style="width:${Math.max(0, Math.min(100, Number(item.sureness) || 0))}%"></span></span>
+      <span class="match-percent">${esc(item.sureness)}%</span>
+    </li>
+  `).join("");
+  document.getElementById("doctor-score").textContent = report.honesty || data.note || "";
 }
 
 async function refresh() {

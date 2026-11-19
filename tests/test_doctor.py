@@ -51,6 +51,10 @@ class AdvisorTests(unittest.TestCase):
         self.assertEqual(advice["kind"], "deficiency")
         self.assertFalse(advice["can_treat"])
         self.assertEqual(advice["method"], "database-color-match")
+        self.assertGreaterEqual(len(advice["matches"]), 9)
+        self.assertEqual(advice["matches"][0]["entry_id"], "magnesium")
+        self.assertEqual(advice["matches"][0]["sureness"], 100)
+        self.assertNotIn("too close", advice["farmer_message"].lower())
 
     def test_a_yellow_magnesium_leaf_is_not_called_healthy(self):
         magnesium = next(entry for entry in self.catalog if entry.id == "magnesium")
@@ -66,6 +70,8 @@ class AdvisorTests(unittest.TestCase):
                 held.append(replace(entry, examples=kept))
             advice = advise(example.features, held)
             self.assertNotEqual(advice["kind"], "healthy", example.path.name)
+            self.assertNotEqual(advice["kind"], "uncertain", example.path.name)
+            self.assertGreater(len(advice["matches"]), 1)
 
     def test_healthy_examples_stay_healthy(self):
         healthy = next(entry for entry in self.catalog if entry.id == "healthy")
@@ -110,6 +116,9 @@ class TreatmentApiTests(unittest.TestCase):
         self.assertEqual(body["entry_id"], "magnesium")
         self.assertEqual(body["kind"], "deficiency")
         self.assertEqual(body["method"], "database-color-match")
+        self.assertGreaterEqual(len(body["matches"]), 9)
+        saved = self.client.get("/api/doctor").get_json()["report"]
+        self.assertEqual(saved["matches"][0]["entry_id"], "magnesium")
         self.assertIn("not a laboratory test", body["honesty"])
         self.assertEqual(body["rover_id"], "rover1")
         image = self.client.get(body["image_url"])

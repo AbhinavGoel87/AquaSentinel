@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from backend.database.db import Database
@@ -49,7 +50,7 @@ class DoctorService:
                 "checkpoint_id": checkpoint_id,
                 "image_url": f"/api/inspections/{inspection_id}/image",
                 "created_at": utc_iso(created),
-                "honesty": "This is a match to the uploaded example photos. It is not a laboratory test.",
+                "honesty": "Sureness is how close the colors are to each entry. It is not a laboratory test.",
             }
         )
         return report
@@ -72,13 +73,14 @@ class DoctorService:
             "treatment_id": row["treatment_id"],
             "dose_seconds": row["dose_seconds"],
             "match_score": row["match_score"],
+            "matches": _matches(row["matches_json"]),
             "method": row["method"],
             "can_treat": False,
             "rover_id": row["rover_id"],
             "checkpoint_id": row["checkpoint_id"],
             "image_url": f"/api/inspections/{row['inspection_id']}/image",
             "created_at": row["created_at"],
-            "honesty": "This is a match to the uploaded example photos. It is not a laboratory test.",
+            "honesty": "Sureness is how close the colors are to each entry. It is not a laboratory test.",
         }
         return {"report": report, "note": report["honesty"]}
 
@@ -90,6 +92,16 @@ class DoctorService:
         if not path.exists():
             return None
         return path
+
+
+def _matches(stored) -> list:
+    if not stored:
+        return []
+    try:
+        payload = json.loads(stored)
+    except (TypeError, json.JSONDecodeError):
+        return []
+    return payload if isinstance(payload, list) else []
 
 
 def _suffix(payload: bytes) -> str:
