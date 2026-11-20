@@ -1,7 +1,6 @@
-"""Timed treatment into the irrigation water.
+"""A farmer's choice of deficiency, recorded on this computer.
 
-A treatment starts only after the farmer confirms a deficiency or disease match.
-It stops at its time limit, on emergency stop, and when the program starts.
+There is no timer. The record does not open a valve or talk to the Arduino Uno.
 """
 
 from __future__ import annotations
@@ -11,89 +10,66 @@ import threading
 from backend.database.db import Database
 from backend.irrigation.safety import SafetyError
 from backend.utils.timeutil import utc_iso, utc_now
-from backend.vision.catalog import MAX_DOSE_SECONDS
+from backend.vision.catalog import PlantEntry
 
 
 class TreatmentController:
-    def __init__(self, db: Database):
+    def __init__(self, db: Database, catalog: list[PlantEntry]):
         self.db = db
         self._lock = threading.Lock()
-        self.active: dict | None = None
+        self.choices = deficiency_choices(catalog)
+        self.allowed = {item["id"]: item["label"] for item in self.choices}
+        self.last: dict | None = None
         self.db.close_open_treatments(utc_iso(), "startup_safe_state")
 
-    def confirm(self, report: dict) -> dict:
+    def confirm(self, report: dict, treatment_id: str) -> dict:
         with self._lock:
-            if self.active is not None:
-                raise SafetyError("A timer for the last photo is already running.")
-            if not report.get("can_treat"):
-                raise SafetyError("This photo is not clear enough to add a treatment.")
-            if report.get("kind") not in ("deficiency", "disease"):
-                raise SafetyError("Only a deficiency or disease match can be recorded.")
-            treatment_id = report.get("treatment_id")
-            if not treatment_id:
-                raise SafetyError("This result has no treatment.")
-            dose = report.get("dose_seconds") or 30
-            dose = max(5, min(int(dose), MAX_DOSE_SECONDS))
-            started = utc_now()
-            event_id = self.db.open_treatment(
-                treatment_id,
-                report.get("report_id"),
-                utc_iso(started),
-                dose,
-                "simulated",
-            )
-            self.active = {
-                "event_id": event_id,
-                "treatment_id": treatment_id,
-                "report_id": report.get("report_id"),
-                "started": started,
-                "max_seconds": dose,
-                "title": report.get("title"),
-            }
+            if report is None or report.get("report_id") is None:
+                raise SafetyError("Check a photo before adding to irrigation.")
+            label = self.allowed.get(treatment_id)
+            if label is None:
+                raise SafetyError("Choose a deficiency from the list.")
+            moment = utc_now()
+            stamp = utc_iso(moment)
+            event_id = self.db.open_treatment(treatment_id, report.get("report_id"), stamp, 0, "simulated")
+            self.db.close_treatment(event_id, stamp, "recorded", 0)
+            self.last = {"treatment_id": treatment_id, "label": label}
             return self._public_unlocked()
-
-    def halt(self, reason: str) -> dict:
-        with self._lock:
-            self._stop_unlocked(reason)
-            return self._public_unlocked()
-
-    def tick(self, moment, emergency: bool) -> None:
-        with self._lock:
-            if self.active is None:
-                return
-            if emergency:
-                self._stop_unlocked("emergency_stop", moment)
-                return
-            elapsed = (moment - self.active["started"]).total_seconds()
-            if elapsed >= self.active["max_seconds"]:
-                self._stop_unlocked("max_duration", moment)
 
     def public(self) -> dict:
         with self._lock:
             return self._public_unlocked()
 
-    def _stop_unlocked(self, reason: str, moment=None) -> None:
-        if self.active is None:
-            return
-        moment = moment or utc_now()
-        elapsed = round(max(0.0, (moment - self.active["started"]).total_seconds()), 1)
-        self.db.close_treatment(self.active["event_id"], utc_iso(moment), reason, elapsed)
-        self.active = None
-
     def _public_unlocked(self) -> dict:
-        if self.active is None:
+        if self.last is None:
             return {
                 "active": False,
                 "treatment_id": None,
-                "seconds_remaining": 0,
+                "label": None,
                 "note": "Nothing is recorded. This page does not open a valve.",
+                "choices": self.choices,
             }
-        elapsed = (utc_now() - self.active["started"]).total_seconds()
-        remaining = max(0, int(self.active["max_seconds"] - elapsed))
         return {
-            "active": True,
-            "treatment_id": self.active["treatment_id"],
-            "seconds_remaining": remaining,
-            "title": self.active["title"],
-            "note": "Timer recorded on this computer. It does not open a valve or talk to the Arduino Uno.",
+            "active": False,
+            "treatment_id": self.last["treatment_id"],
+            "label": self.last["label"],
+            "note": f"{self.last['label']} recorded on this computer. This page does not open a valve or talk to the Arduino Uno.",
+            "choices": self.choices,
         }
+
+
+def deficiency_choices(catalog: list[PlantEntry]) -> list[dict]:
+    choices = []
+    for entry in catalog:
+        if entry.kind not in ("deficiency", "disease"):
+            continue
+        choice_id = entry.treatment_id or entry.id
+        choices.append({"id": choice_id, "label": choice_label(entry.id)})
+    return choices
+
+
+def choice_label(entry_id: str) -> str:
+    if entry_id == "multiple":
+        return "Mixed"
+    word = str(entry_id or "")
+    return word[:1].upper() + word[1:]

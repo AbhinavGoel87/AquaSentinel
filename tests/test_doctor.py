@@ -129,6 +129,34 @@ class TreatmentApiTests(unittest.TestCase):
         finally:
             image.close()
 
+    def test_the_farmer_picks_a_deficiency_and_no_timer_starts(self):
+        sample = _example("magnesium")
+        report = self.client.post(
+            "/api/inspections", data=sample.read_bytes(), content_type="image/jpeg"
+        ).get_json()
+        page = self.client.get("/api/doctor").get_json()
+        ids = [item["id"] for item in page["treatment"]["choices"]]
+        self.assertIn("magnesium", ids)
+        self.assertIn("nitrogen", ids)
+        self.assertIn("multiple", ids)
+        self.assertNotIn("healthy", ids)
+        self.assertIsNone(page["treatment"]["treatment_id"])
+        chosen = self.client.post(
+            "/api/treatments/confirm",
+            json={"report_id": report["report_id"], "treatment_id": "nitrogen"},
+        )
+        self.assertEqual(chosen.status_code, 200)
+        treatment = chosen.get_json()["treatment"]
+        self.assertFalse(treatment["active"])
+        self.assertEqual(treatment["treatment_id"], "nitrogen")
+        self.assertEqual(treatment["label"], "Nitrogen")
+        self.assertNotIn("seconds", treatment["note"])
+        refused = self.client.post(
+            "/api/treatments/confirm",
+            json={"report_id": report["report_id"], "treatment_id": "healthy"},
+        )
+        self.assertEqual(refused.status_code, 409)
+
     def test_upload_is_marked_simulated_and_stays_uncertain(self):
         dark = self._png((4, 4, 4))
         report = self.client.post(

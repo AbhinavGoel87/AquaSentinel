@@ -26,7 +26,7 @@ def create_app(config: Config | None = None) -> Flask:
     database = Database(cfg.db_path)
     database.ensure_schema()
     doctor = DoctorService(database, load_catalog(cfg.plant_database_path), cfg.inspection_path)
-    treatments = TreatmentController(database)
+    treatments = TreatmentController(database, doctor.catalog)
     app.extensions["config"] = cfg
     app.extensions["db"] = database
     app.extensions["doctor"] = doctor

@@ -1,6 +1,6 @@
 # Data contracts
 
-The running app stores plant photos, doctor reports, and a confirmed timer. It does not start an MQTT broker and it does not open a valve.
+The running app stores plant photos, doctor reports, and the deficiency the farmer picks. It does not start an MQTT broker and it does not open a valve.
 
 The tables and topic names below belong to the unused field library. They are not served by the current page.
 

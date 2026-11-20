@@ -29,7 +29,14 @@ function render(data) {
         <div class="result-copy">
           <p class="status" id="doctor-title"></p>
           <ol class="matches" id="doctor-matches"></ol>
-          <button type="button" class="btn" id="doctor-add">Add to irrigation</button>
+          <div class="irrigate">
+            <label>Deficiency
+              <select id="doctor-choice">
+                <option value="">Choose a deficiency</option>
+              </select>
+            </label>
+            <button type="button" class="btn" id="doctor-add" disabled>Add to irrigation</button>
+          </div>
           <p class="note" id="doctor-treatment"></p>
           <p id="doctor-message"></p>
           <p class="note" id="doctor-action"></p>
@@ -69,13 +76,27 @@ function render(data) {
   `).join("");
   }
   document.getElementById("doctor-score").textContent = report.honesty || data.note || "";
-  const treatment = data.treatment || { active: false, note: "" };
+  const treatment = data.treatment || { treatment_id: null, note: "", choices: [] };
+  fillChoices(treatment.choices || []);
   const add = document.getElementById("doctor-add");
+  const choice = document.getElementById("doctor-choice");
   add.dataset.report = String(report.report_id);
-  add.disabled = !report.can_treat || treatment.active;
-  document.getElementById("doctor-treatment").textContent = treatment.active
-    ? `${treatment.treatment_id} · ${treatment.seconds_remaining}s left. ${treatment.note}`
+  add.disabled = !choice.value;
+  document.getElementById("doctor-treatment").textContent = treatment.treatment_id
+    ? treatment.note
     : "";
+}
+
+function fillChoices(choices) {
+  const choice = document.getElementById("doctor-choice");
+  const signature = choices.map((item) => item.id).join("|");
+  if (!signature || choice.dataset.signature === signature) return;
+  const selected = choice.value;
+  choice.dataset.signature = signature;
+  choice.innerHTML = `<option value="">Choose a deficiency</option>${choices.map((item) => `
+    <option value="${esc(item.id)}">${esc(item.label)}</option>
+  `).join("")}`;
+  if ([...choice.options].some((option) => option.value === selected)) choice.value = selected;
 }
 
 async function refresh() {
@@ -89,16 +110,25 @@ async function refresh() {
   }
 }
 
+document.getElementById("doctor").addEventListener("change", (event) => {
+  if (event.target.id !== "doctor-choice") return;
+  document.getElementById("doctor-add").disabled = !event.target.value;
+});
+
 document.getElementById("doctor").addEventListener("click", async (event) => {
   const button = event.target.closest("#doctor-add");
-  if (!button || button.disabled || busy) return;
+  const choice = document.getElementById("doctor-choice");
+  if (!button || button.disabled || busy || !choice.value) return;
   try {
     busy = true;
     button.disabled = true;
     const response = await fetch("/api/treatments/confirm", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ report_id: Number(button.dataset.report) }),
+      body: JSON.stringify({
+        report_id: Number(button.dataset.report),
+        treatment_id: choice.value,
+      }),
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || "The treatment could not be added.");

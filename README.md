@@ -12,7 +12,7 @@ The same Python app runs on Windows, macOS, and Linux. An ESP32-CAM on the same 
 - Compares it with the example pictures and says whether the closest match is healthy, a deficiency, a discrepancy, or too uncertain to decide.
 - Saves the photo and the report in a SQLite file.
 
-The photo match is the closest example picture in the CoLeaf set: about 1,000 coffee-leaf photos in ten groups. It is not a lab test and it does not measure a nutrient. **Add to irrigation** records a short timer on this computer. It does not open a valve or talk to the Arduino Uno. See `plant_database/README.md` to install the zip.
+The photo match is the closest example picture in the CoLeaf set: about 1,000 coffee-leaf photos in ten groups. It is not a lab test and it does not measure a nutrient. **Add to irrigation** records the deficiency the farmer picks from the list. It does not open a valve or talk to the Arduino Uno. See `plant_database/README.md` to install the zip.
 
 ## Run it
 
