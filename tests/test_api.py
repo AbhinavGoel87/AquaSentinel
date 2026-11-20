@@ -25,7 +25,6 @@ class ApiTests(unittest.TestCase):
         self.assertIn("Doctor", page)
         self.assertNotIn('id="tab-field"', page)
         self.assertNotIn("Open sprinkler", page)
-        self.assertNotIn("Add to irrigation tank", page)
 
     def test_field_controls_are_not_part_of_this_build(self):
         self.assertEqual(self.client.get("/api/field").status_code, 404)

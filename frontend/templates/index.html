@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kshetra</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=10">
+  <link rel="stylesheet" href="/static/css/app.css?v=13">
 </head>
 <body>
   <div class="sheet">
@@ -22,6 +22,7 @@
         <div class="reading-copy">
           <h2>Doctor</h2>
           <p>The ESP32-CAM posts a JPEG over Wi-Fi, or you can choose a photo here. The result is a color match to the example pictures, not a lab test.</p>
+          <img id="doctor-photo" alt="Latest plant photo" hidden>
           <form id="photo-form" class="controls">
             <label>Leaf photo
               <input id="photo-file" type="file" accept="image/png,image/jpeg" required>
@@ -33,6 +34,6 @@
       </section>
     </main>
   </div>
-  <script src="/static/js/doctor.js?v=9"></script>
+  <script src="/static/js/doctor.js?v=10"></script>
 </body>
 </html>

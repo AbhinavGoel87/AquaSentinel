@@ -4,11 +4,18 @@ from __future__ import annotations
 
 from flask import Blueprint, current_app, jsonify, request, send_file
 
+from backend.irrigation.safety import SafetyError
+from backend.utils.timeutil import utc_now
+
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 def _doctor():
     return current_app.extensions["doctor"]
+
+
+def _treatments():
+    return current_app.extensions["treatments"]
 
 
 @api_bp.get("/health")
@@ -18,7 +25,25 @@ def health():
 
 @api_bp.get("/doctor")
 def doctor():
-    return jsonify(_doctor().public())
+    _treatments().tick(utc_now(), False)
+    payload = _doctor().public()
+    payload["treatment"] = _treatments().public()
+    return payload
+
+
+@api_bp.post("/treatments/confirm")
+def confirm_treatment():
+    body = request.get_json(silent=True) or {}
+    current = _doctor().public().get("report")
+    if current is None or current["report_id"] != body.get("report_id"):
+        return jsonify({"error": "Confirm the latest doctor report."}), 409
+    try:
+        treatment = _treatments().confirm(current)
+    except SafetyError as exc:
+        return jsonify({"error": str(exc)}), 409
+    payload = _doctor().public()
+    payload["treatment"] = treatment
+    return jsonify(payload)
 
 
 @api_bp.post("/inspections")

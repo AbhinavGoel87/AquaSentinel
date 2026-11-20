@@ -24,11 +24,11 @@ class TreatmentController:
     def confirm(self, report: dict) -> dict:
         with self._lock:
             if self.active is not None:
-                raise SafetyError("A treatment is already going into the irrigation water.")
+                raise SafetyError("A timer for the last photo is already running.")
             if not report.get("can_treat"):
                 raise SafetyError("This photo is not clear enough to add a treatment.")
             if report.get("kind") not in ("deficiency", "disease"):
-                raise SafetyError("Only a deficiency or disease match can be added to the irrigation water.")
+                raise SafetyError("Only a deficiency or disease match can be recorded.")
             treatment_id = report.get("treatment_id")
             if not treatment_id:
                 raise SafetyError("This result has no treatment.")
@@ -86,7 +86,7 @@ class TreatmentController:
                 "active": False,
                 "treatment_id": None,
                 "seconds_remaining": 0,
-                "note": "Nothing is being added to the irrigation water.",
+                "note": "Nothing is recorded. This page does not open a valve.",
             }
         elapsed = (utc_now() - self.active["started"]).total_seconds()
         remaining = max(0, int(self.active["max_seconds"] - elapsed))
@@ -95,5 +95,5 @@ class TreatmentController:
             "treatment_id": self.active["treatment_id"],
             "seconds_remaining": remaining,
             "title": self.active["title"],
-            "note": "This is going into the irrigation tank only, for a short timed cycle.",
+            "note": "Timer recorded on this computer. It does not open a valve or talk to the Arduino Uno.",
         }

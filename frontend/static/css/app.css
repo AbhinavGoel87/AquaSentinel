@@ -122,7 +122,24 @@ main {
   border-top: 1px solid var(--line);
 }
 
+.reading-copy {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .reading-copy p { margin: 6px 0 0; }
+
+#doctor-photo {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  margin-top: 12px;
+  background: var(--paper-edge);
+  border: 1px solid var(--line);
+}
+
+#doctor-photo[hidden] { display: none; }
 
 h2 {
   margin: 0;
@@ -136,7 +153,7 @@ h2 {
   flex-wrap: wrap;
   gap: 12px;
   align-items: end;
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 label {
@@ -151,6 +168,17 @@ input[type="file"] {
   max-width: 100%;
   color: var(--ink);
   font: inherit;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 8px;
+  background: var(--paper-edge);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 12px;
+  font: 600 0.95rem/1.2 Fraunces, Palatino, Georgia, serif;
+  cursor: pointer;
 }
 
 .btn {
@@ -184,22 +212,14 @@ input:focus-visible {
 .doctor-result {
   flex: 1;
   min-height: 0;
-  display: grid;
-  grid-template-columns: 168px minmax(0, 1fr);
-  gap: 16px;
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
 }
 
-.doctor-result img {
-  width: 168px;
-  height: 100%;
-  max-height: 100%;
-  object-fit: cover;
-  background: var(--paper-edge);
-  border: 1px solid var(--line);
-}
+#doctor-add { margin-top: 10px; align-self: start; }
 
 .result-copy {
+  flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -241,26 +261,36 @@ input:focus-visible {
   list-style: none;
   margin: 8px 0 0;
   padding: 0;
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .matches li {
-  flex: 1 1 0;
-  min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(48px, 0.8fr) auto;
+  gap: 8px;
   align-items: center;
-  padding: 0;
+  padding: 3px 0;
   border-top: 1px solid var(--line);
-  overflow: hidden;
 }
 
-.match-name { font-size: 0.98rem; }
+.match-name {
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-bar {
+  height: 7px;
+  background: rgba(36, 24, 15, 0.08);
+}
+
+.match-bar span {
+  display: block;
+  height: 100%;
+  background: var(--marigold);
+}
 
 .match-percent {
   font-variant-numeric: tabular-nums;
@@ -275,8 +305,8 @@ input:focus-visible {
   body { height: auto; overflow: auto; }
   .sheet { height: auto; margin: 0; padding: 16px 14px 20px; overflow: visible; }
   .mast { display: block; }
-  .reading, .doctor-result { grid-template-columns: 1fr; }
-  .doctor-result img { width: 100%; height: 140px; }
+  .reading { grid-template-columns: 1fr; }
+  #doctor-photo { height: 140px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

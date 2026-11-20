@@ -47,7 +47,7 @@ def advise(photo_features: dict, entries: list[PlantEntry]) -> dict:
         "match_score": round(best_score, 3),
         "matches": matches,
         "method": "database-color-match",
-        "can_treat": False,
+        "can_treat": best.kind in ("deficiency", "disease") and bool(best.treatment_id),
     }
 
 

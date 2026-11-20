@@ -109,7 +109,7 @@ def _spec(entry_id: str, treatment: str | None) -> dict:
             "kind": "healthy",
             "title": "Looks like the healthy examples",
             "farmer_message": "This photo is closest to the healthy pictures in the CoLeaf set. No nutrient treatment is suggested.",
-            "recommended_action": "Keep watching the plant. Let the sprinklers handle dry soil.",
+            "recommended_action": "Keep watching the plant. This computer does not control the field.",
             "treatment_id": None,
             "dose_seconds": 30,
         }
@@ -119,7 +119,7 @@ def _spec(entry_id: str, treatment: str | None) -> dict:
             "kind": "deficiency",
             "title": "Possible mix of deficiencies",
             "farmer_message": "This photo is closest to the combined-deficiency examples in the CoLeaf set. Those pictures show more than one nutrient problem at once, so the match does not name a single nutrient.",
-            "recommended_action": "Look at the plant in person before adding anything to the irrigation water.",
+            "recommended_action": "Look at the plant in person. This computer does not control the field.",
             "treatment_id": None,
             "dose_seconds": 30,
         }
@@ -132,7 +132,7 @@ def _spec(entry_id: str, treatment: str | None) -> dict:
             f"This photo is closest to the {nutrient} examples in the CoLeaf set. "
             "That is a visual match to those pictures, not a measurement of the nutrient in the leaf or the soil."
         ),
-        "recommended_action": f"If you agree, add your {nutrient} supplement to the irrigation tank for one short timed cycle.",
+        "recommended_action": "This computer only names the closest example. It does not control the field.",
         "treatment_id": nutrient,
         "dose_seconds": 30,
     }

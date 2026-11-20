@@ -1,6 +1,8 @@
 # Data contracts
 
-Phase 1 stores history in SQLite and checks the JSON shapes that hardware will use later. It does not start an MQTT broker.
+The running app stores plant photos, doctor reports, and a confirmed timer. It does not start an MQTT broker and it does not open a valve.
+
+The tables and topic names below belong to the unused field library. They are not served by the current page.
 
 The computer's receive time is the time stored as `recorded_at`. A future device timestamp can be kept beside it so clock drift is visible. Field time (`sim_time`) is the accelerated demo clock.
 

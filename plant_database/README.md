@@ -25,8 +25,8 @@ plant_database/entries/magnesium/
 - `title` — what the farmer sees
 - `farmer_message` — the explanation
 - `recommended_action` — the step to take
-- `treatment_id` — the nutrient word, or `null` if nothing should be added to the water
-- `dose_seconds` — how long the irrigation-tank cycle may run, at most 180
+- `treatment_id` — the nutrient word, or `null` when this page must not offer Add to irrigation
+- `dose_seconds` — length of the timer recorded on this computer, at most 180. The app does not open a valve.
 
 A deficiency or disease that names a treatment must say that it goes into the irrigation water. The program refuses to start that cycle until the farmer presses the confirm button. An uncertain photo, a healthy match, and the mixed group cannot start a treatment.
 

@@ -60,7 +60,7 @@ class DoctorService:
         if row is None:
             return {
                 "report": None,
-                "note": "The doctor rover has not sent a photo yet. You can also upload one from this page.",
+                "note": "No photo yet. The camera can send one, or you can choose a file here.",
             }
         report = {
             "report_id": row["report_id"],
@@ -75,7 +75,7 @@ class DoctorService:
             "match_score": row["match_score"],
             "matches": _matches(row["matches_json"]),
             "method": row["method"],
-            "can_treat": False,
+            "can_treat": row["kind"] in ("deficiency", "disease") and bool(row["treatment_id"]),
             "rover_id": row["rover_id"],
             "checkpoint_id": row["checkpoint_id"],
             "image_url": f"/api/inspections/{row['inspection_id']}/image",

@@ -49,7 +49,7 @@ class AdvisorTests(unittest.TestCase):
         advice = advise(features_from_bytes(path.read_bytes()), self.catalog)
         self.assertEqual(advice["entry_id"], "magnesium")
         self.assertEqual(advice["kind"], "deficiency")
-        self.assertFalse(advice["can_treat"])
+        self.assertTrue(advice["can_treat"])
         self.assertEqual(advice["method"], "database-color-match")
         self.assertGreaterEqual(len(advice["matches"]), 9)
         self.assertEqual(advice["matches"][0]["entry_id"], "magnesium")
