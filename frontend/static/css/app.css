@@ -66,8 +66,9 @@ body {
 
 .mast {
   display: flex;
-  align-items: baseline;
-  gap: 14px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .devanagari {
@@ -86,20 +87,8 @@ h1 {
   line-height: 0.9;
 }
 
-.lede {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.banner,
 .error {
   margin: 6px 0 0;
-}
-
-.banner { color: var(--muted); }
-
-.error {
   color: var(--kumkum);
   padding-top: 8px;
   border-top: 1px solid var(--kumkum);
